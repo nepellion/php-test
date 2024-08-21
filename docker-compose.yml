@@ -8,7 +8,7 @@ services:
       - 8000:8000 # Main port of the application / server (host:container, the container port must be the same as the one in the entrypoint)
     volumes:
       - ./laravel-app:/app
-    entrypoint: php -c php.ini artisan serve --host=0.0.0.0 --port=8000
+    entrypoint: php artisan serve --host=0.0.0.0 --port=8000
     depends_on:
       - sql-server
 
