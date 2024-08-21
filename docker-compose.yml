@@ -1,6 +1,40 @@
 services:
-  php-server:
-    build: .
+  laravel:
+    image: local-laravel-server
+    build:
+      context: laravel-app
+      dockerfile: ../Dockerfile
     ports:
-      - "12366:8080"
+      - 8000:8000 # Main port of the application / server (host:container, the container port must be the same as the one in the entrypoint)
+    volumes:
+      - ./laravel-app:/app
+    entrypoint: php -c php.ini artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      - sql-server
 
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8005:80 # Main port of the phpmyadmin
+    environment:
+      PMA_HOST: sql-server
+      PMA_PORT: 3306
+    depends_on:
+      - sql-server
+
+  sql-server:
+    image: mariadb:latest
+    ports:
+      - 3306:3306 # Main port of the database, if needed
+    volumes:
+      - .sql/data:/var/lib/mysql
+      - .sql/logs:/var/log/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: root-p@ssw0rd.
+      MARIADB_DATABASE: laravel
+      MARIADB_USER: laravel
+      MARIADB_PASSWORD: p@ssw0rd.
+
+networks:
+  default:
+    name: laravel-server
