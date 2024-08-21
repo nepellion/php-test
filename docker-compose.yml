@@ -1,0 +1,6 @@
+services:
+  php-server:
+    build: .
+    ports:
+      - "12366:8080"
+
